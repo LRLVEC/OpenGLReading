@@ -1,0 +1,36 @@
+#version 450 core
+#extension GL_NV_viewport_array2 : require
+
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+
+precision highp float;
+precision highp int;
+layout(std140, column_major) uniform;
+
+uniform mat4 MVP;
+
+layout(location = POSITION) in vec2 Position;
+layout(location = TEXCOORD) in vec2 Texcoord;
+
+out block
+{ 
+	vec2 Texcoord;
+} Out;
+
+out gl_PerVertex
+{
+	vec4 gl_Position;
+	int gl_ViewportMask[];
+};
+
+void main()
+{
+	Out.Texcoord = Texcoord;
+
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+	gl_Layer = gl_InstanceID;
+
+	gl_ViewportMask[0] = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
+}
